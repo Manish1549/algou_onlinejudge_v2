@@ -17,7 +17,7 @@ import requests
 load_dotenv()
 
 def run_code(language, code, input_data):
-    print("DEBUG: I'm in the WRONG run_code function!"
+    print("DEBUG: I'm in the WRONG run_code function!")
 
 def call_external_service(language, code, input_data):
     # Add debug output
