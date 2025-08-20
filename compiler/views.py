@@ -16,9 +16,10 @@ import re
 import requests
 load_dotenv()
 
+def run_code(language, code, input_data):
+    print("DEBUG: I'm in the WRONG run_code function!"
 
-
-def run_code_(language, code, input_data):
+def call_external_service(language, code, input_data):
     # Add debug output
     print(f"DEBUG: URL being used: {repr(settings.RUN_CODE_SERVICE_URL)}")
 
@@ -185,7 +186,7 @@ def submit(request,problem_id):
         compile_error = False
         for testcase in testcases :
             input_data = testcase.input_data
-            output_data,error,compile_error = run_code_(language,code,input_data)
+            output_data,error,compile_error = call_external_service(language,code,input_data)
             
             if error.strip() :
                   if compile_error:
@@ -252,7 +253,7 @@ def run_custom(request):
             code = data.get('code')
             input_data = data.get('input_data')
             
-            output_data, error, compile_error = run_code_(language, code, input_data)
+            output_data, error, compile_error = call_external_service(language, code, input_data)
             
             return JsonResponse({
                 'output': output_data,
