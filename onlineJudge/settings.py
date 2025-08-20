@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-b8^o_&@3awk12%yyov6ma!xf2ds@2bb4z2k&qxp2q0p$0+kr#8
 DEBUG = True
 
 ALLOWED_HOSTS = ['3.95.253.202', 'localhost', '127.0.0.1']
-RUN_CODE_SERVICE_URL = os.environ.get('RUN_CODE_SERVICE_URL', 'http://localhost:8001/run/')
+RUN_CODE_SERVICE_URL = os.environ.get('RUN_CODE_SERVICE_URL', 'http://98.81.82.84:8000/run/')
 
 # Application definition
 
