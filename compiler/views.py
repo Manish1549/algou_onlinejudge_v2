@@ -19,6 +19,9 @@ load_dotenv()
 
 
 def run_code(language, code, input_data):
+    # Add debug output
+    print(f"DEBUG: URL being used: {repr(settings.RUN_CODE_SERVICE_URL)}")
+
     try:
         payload ={
              'language': language,
