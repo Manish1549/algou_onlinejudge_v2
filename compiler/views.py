@@ -16,13 +16,9 @@ import re
 import requests
 load_dotenv()
 
-def run_code(language, code, input_data):
-    print("DEBUG: I'm in the WRONG run_code function!")
+
 
 def call_external_service(language, code, input_data):
-    # Add debug output
-    print(f"DEBUG: URL being used: {repr(settings.RUN_CODE_SERVICE_URL)}")
-
     try:
         payload ={
              'language': language,
@@ -40,6 +36,8 @@ def call_external_service(language, code, input_data):
             stderr =result.get('stderr', '')
             compile_error= result.get('compile_error', False)
             return stdout, stderr, compile_error
+        else:
+            return "", f"Run service error: {response.status_code}", True
 
     except requests.exceptions.Timeout:
         return "", "Run service timeout (10s)", True
