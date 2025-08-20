@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-b8^o_&@3awk12%yyov6ma!xf2ds@2bb4z2k&qxp2q0p$0+kr#8'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ["codestellar.up.railway.app", "localhost", "127.0.0.1"]
 RUN_CODE_SERVICE_URL = os.environ.get('RUN_CODE_SERVICE_URL', 'http://98.81.82.84:8000/run/')
