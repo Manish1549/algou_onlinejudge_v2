@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-b8^o_&@3awk12%yyov6ma!xf2ds@2bb4z2k&qxp2q0p$0+kr#8
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ["codestellar.up.railway.app", "localhost", "127.0.0.1"]
 RUN_CODE_SERVICE_URL = os.environ.get('RUN_CODE_SERVICE_URL', 'http://98.81.82.84:8000/run/')
 
 # Application definition
@@ -123,3 +123,8 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+# CSRF Trusted Origins
+CSRF_TRUSTED_ORIGINS = [
+    "https://codestellar.up.railway.app",
+]
+
