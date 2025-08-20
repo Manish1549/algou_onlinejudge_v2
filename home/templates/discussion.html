@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Discussions - CodeJudge</title>
+  <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { primary: "#3b82f6", secondary: "#8dd3c7" },
+          borderRadius: {
+            none: "0px",
+            sm: "4px",
+            DEFAULT: "8px",
+            md: "12px",
+            lg: "16px",
+            xl: "20px",
+            "2xl": "24px",
+            "3xl": "32px",
+            full: "9999px",
+            button: "8px",
+          },
+        },
+      },
+    };
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+  <style>
+    :where([class^="ri-"])::before {
+      content: "\f3c2";
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+  <header class="bg-white shadow-sm border-b border-gray-200">
+    <nav class="w-full px-6 py-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-8">
+          <div class="font-['Pacifico'] text-2xl text-primary">Online Judge</div>
+          <div class="hidden md:flex items-center space-x-6">
+            <a href="{% url 'problems' %}" class="text-gray-700 hover:text-primary transition-colors">Problems</a>
+            <a href="#" class="text-gray-700 hover:text-primary transition-colors">Contests</a>
+            <a href="#" class="text-gray-700 hover:text-primary transition-colors">Rankings</a>
+            <a href="#" class="text-primary font-medium">Discussions</a>
+          </div>
+        </div>
+        <div class="flex items-center space-x-4">
+          <a href="{% url 'login-user' %}" class="px-4 py-2 text-gray-700 hover:text-primary transition-colors whitespace-nowrap !rounded-button">Sign In</a>
+          <a href="{% url 'registration-user' %}" class="px-6 py-2 bg-primary text-white hover:bg-opacity-90 transition-colors whitespace-nowrap !rounded-button">Get Started</a>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main class="min-h-screen">
+    <section class="py-12">
+      <div class="max-w-7xl mx-auto px-6">
+        <!-- Page Header -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+          <div class="mb-6 md:mb-0">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">Discussion Forum</h1>
+            <p class="text-gray-600">Share knowledge and discuss problems with the community</p>
+          </div>
+          <button class="px-6 py-3 bg-primary text-white hover:bg-opacity-90 transition-colors whitespace-nowrap !rounded-button flex items-center gap-2">
+            <i class="ri-add-line"></i>
+            <span>New Thread</span>
+          </button>
+        </div>
+
+        <!-- Filters -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div class="flex flex-wrap items-center gap-3">
+              <span class="text-sm font-medium text-gray-700">Category:</span>
+              <button class="px-4 py-2 bg-primary text-white text-sm !rounded-button">All</button>
+              <button class="px-4 py-2 bg-gray-100 text-gray-700 hover:bg-gray-200 text-sm !rounded-button">Algorithm</button>
+              <button class="px-4 py-2 bg-gray-100 text-gray-700 hover:bg-gray-200 text-sm !rounded-button">Data Structure</button>
+              <button class="px-4 py-2 bg-gray-100 text-gray-700 hover:bg-gray-200 text-sm !rounded-button">Contest</button>
+              <button class="px-4 py-2 bg-gray-100 text-gray-700 hover:bg-gray-200 text-sm !rounded-button">Bug Report</button>
+              <button class="px-4 py-2 bg-gray-100 text-gray-700 hover:bg-gray-200 text-sm !rounded-button">Feature Request</button>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="text-sm font-medium text-gray-700">Sort by:</span>
+              <select class="border border-gray-300 rounded-button px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                <option>Latest</option>
+                <option>Most Replies</option>
+                <option>Most Views</option>
+                <option>Top Voted</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Threads List -->
+        <div class="space-y-4">
+          <!-- Thread 1 -->
+          <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+            <div class="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
+              <div class="flex-1">
+                <div class="flex flex-wrap items-center gap-2 mb-3">
+                  <span class="px-3 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">Algorithm</span>
+                  <span class="px-3 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">beginner</span>
+                  <span class="px-3 py-1 bg-purple-100 text-purple-800 text-xs font-medium rounded-full">hash-table</span>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2 hover:text-primary cursor-pointer transition-colors">
+                  How to solve Two Sum problem efficiently?
+                </h3>
+                <p class="text-gray-600 mb-4">Looking for optimal solutions to the classic Two Sum problem. What are the different approaches and their time complexities?</p>
+                <div class="flex flex-wrap items-center gap-4 text-sm text-gray-600">
+                  <span class="flex items-center gap-1">
+                    <i class="ri-user-line"></i>
+                    CodeMaster2024
+                  </span>
+                  <span class="flex items-center gap-1">
+                    <i class="ri-time-line"></i>
+                    2 hours ago
+                  </span>
+                  <span class="flex items-center gap-1">
+                    <i class="ri-message-2-line"></i>
+                    15 replies
+                  </span>
+                  <span class="flex items-center gap-1">
+                    <i class="ri-eye-line"></i>
+                    245 views
+                  </span>
+                </div>
+              </div>
+              <div class="flex items-center gap-3">
+                <button class="flex items-center gap-1 text-gray-600 hover:text-primary transition-colors">
+                  <i class="ri-arrow-up-line"></i>
+                  <span>42</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Thread 2 -->
+          <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+            <div class="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
+              <div class="flex-1">
+                <div class="flex flex-wrap items-center gap-2 mb-3">
+                  <span class="px-3 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">Contest</span>
+                  <span class="px-3 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">dynamic-programming</span>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2 hover:text-primary cursor-pointer transition-colors">
+                  Contest #156 Discussion - Problem C Analysis
+                </h3>
+                <p class="text-gray-600 mb-4">Let's discuss approaches for Problem C from the latest contest. I solved it with DP but wondering if there's a more optimal solution.</p>
+                <div class="flex flex-wrap items-center gap-4 text-sm text-gray-600">
+                  <span class="flex items-center gap-1">
+                    <i class="ri-user-line"></i>
+                    AlgoExpert
+                  </span>
+                  <span class="flex items-center gap-1">
+                    <i class="ri-time-line"></i>
+                    1 hour ago
+                  </span>
+                  <span class="flex items-center gap-1">
+                    <i class="ri-message-2-line"></i>
+                    32 replies
+                  </span>
+                  <span class="flex items-center gap-1">
+                    <i class="ri-eye-line"></i>
+                    567 views
+                  </span>
+                </div>
+              </div>
+              <div class="flex items-center gap-3">
+                <button class="flex items-center gap-1 text-gray-600 hover:text-primary transition-colors">
+                  <i class="ri-arrow-up-line"></i>
+                  <span>28</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Thread 3 -->
+          <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+            <div class="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
+              <div class="flex-1">
+                <div class="flex flex-wrap items-center gap-2 mb-3">
+                  <span class="px-3 py-1 bg-purple-100 text-purple-800 text-xs font-medium rounded-full">Data Structure</span>
+                  <span class="px-3 py-1 bg-yellow-100 text-yellow-800 text-xs font-medium rounded-full">tree</span>
+                  <span class="px-3 py-1 bg-red-100 text-red-800 text-xs font-medium rounded-full">dfs</span>
+                  <span class="px-3 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">bfs</span>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2 hover:text-primary cursor-pointer transition-colors">
+                  Binary Tree Traversal Methods Comparison
+                </h3>
+                <p class="text-gray-600 mb-4">Detailed comparison of different tree traversal methods with code examples in multiple languages. When to use which approach?</p>
+                <div class="flex flex-wrap items-center gap-4 text-sm text-gray-600">
+                  <span class="flex items-center gap-1">
+                    <i class="ri-user-line"></i>
+                    TreeLover
+                  </span>
+                  <span class="flex items-center gap-1">
+                    <i class="ri-time-line"></i>
+                    3 hours ago
+                  </span>
+                  <span class="flex items-center gap-1">
+                    <i class="ri-message-2-line"></i>
+                    8 replies
+                  </span>
+                  <span class="flex items-center gap-1">
+                    <i class="ri-eye-line"></i>
+                    189 views
+                  </span>
+                </div>
+              </div>
+              <div class="flex items-center gap-3">
+                <button class="flex items-center gap-1 text-gray-600 hover:text-primary transition-colors">
+                  <i class="ri-arrow-up-line"></i>
+                  <span>19</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="flex justify-center mt-12">
+          <nav class="flex items-center gap-1">
+            <button class="w-10 h-10 flex items-center justify-center rounded-button bg-gray-100 text-gray-700 hover:bg-gray-200">
+              <i class="ri-arrow-left-s-line"></i>
+            </button>
+            <button class="w-10 h-10 flex items-center justify-center rounded-button bg-primary text-white">1</button>
+            <button class="w-10 h-10 flex items-center justify-center rounded-button bg-gray-100 text-gray-700 hover:bg-gray-200">2</button>
+            <button class="w-10 h-10 flex items-center justify-center rounded-button bg-gray-100 text-gray-700 hover:bg-gray-200">3</button>
+            <span class="px-2">...</span>
+            <button class="w-10 h-10 flex items-center justify-center rounded-button bg-gray-100 text-gray-700 hover:bg-gray-200">8</button>
+            <button class="w-10 h-10 flex items-center justify-center rounded-button bg-gray-100 text-gray-700 hover:bg-gray-200">
+              <i class="ri-arrow-right-s-line"></i>
+            </button>
+          </nav>
+        </div>
+      </div>
+    </section>
+
+    <!-- New Thread Modal (Hidden by default) -->
+    <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden">
+      <div class="bg-white rounded-xl shadow-lg w-full max-w-2xl">
+        <div class="p-6">
+          <div class="flex justify-between items-center mb-6">
+            <h3 class="text-xl font-semibold text-gray-900">Create New Thread</h3>
+            <button class="text-gray-500 hover:text-gray-700">
+              <i class="ri-close-line text-2xl"></i>
+            </button>
+          </div>
+          <form class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Title</label>
+              <input type="text" class="w-full border border-gray-300 rounded-button px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary" placeholder="What's your question?">
+            </div>
+            <div class="grid md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                <select class="w-full border border-gray-300 rounded-button px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary">
+                  <option value="General">General</option>
+                  <option value="Algorithm">Algorithm</option>
+                  <option value="Data Structure">Data Structure</option>
+                  <option value="Contest">Contest</option>
+                  <option value="Bug Report">Bug Report</option>
+                  <option value="Feature Request">Feature Request</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Tags</label>
+                <input type="text" class="w-full border border-gray-300 rounded-button px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary" placeholder="comma separated tags">
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Content</label>
+              <textarea rows="6" class="w-full border border-gray-300 rounded-button px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Write your question in detail..."></textarea>
+            </div>
+            <div class="flex justify-end gap-3 pt-4">
+              <button type="button" class="px-6 py-2 border border-gray-300 text-gray-700 rounded-button hover:bg-gray-50">Cancel</button>
+              <button type="submit" class="px-6 py-2 bg-primary text-white rounded-button hover:bg-opacity-90">Post Thread</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="bg-gray-900 text-gray-300">
+    <div class="max-w-7xl mx-auto px-6 py-16">
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div>
+          <div class="font-['Pacifico'] text-2xl text-white mb-4">Online Judge</div>
+          <p class="text-gray-400 mb-4">The premier online judge platform for competitive programming and skill development.</p>
+          <div class="flex space-x-4">
+            <a href="#" class="w-10 h-10 flex items-center justify-center bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors">
+              <i class="ri-twitter-line"></i>
+            </a>
+            <a href="#" class="w-10 h-10 flex items-center justify-center bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors">
+              <i class="ri-github-line"></i>
+            </a>
+            <a href="#" class="w-10 h-10 flex items-center justify-center bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors">
+              <i class="ri-discord-line"></i>
+            </a>
+          </div>
+        </div>
+        <div>
+          <h3 class="text-white font-semibold mb-4">Platform</h3>
+          <ul class="space-y-2">
+            <li><a href="{% url 'problems' %}" class="hover:text-white transition-colors">Problems</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">Contests</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">Rankings</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">Discussions</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-white font-semibold mb-4">Resources</h3>
+          <ul class="space-y-2">
+            <li><a href="#" class="hover:text-white transition-colors">Documentation</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">API Reference</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">Tutorials</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">Community</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-white font-semibold mb-4">Support</h3>
+          <ul class="space-y-2">
+            <li><a href="#" class="hover:text-white transition-colors">Help Center</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">Contact Us</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">Bug Reports</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">Feature Requests</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
+        <p class="text-gray-400">&copy; 2025 onlineJudge. All rights reserved.</p>
+        <div class="flex space-x-6 mt-4 md:mt-0">
+          <a href="#" class="text-gray-400 hover:text-white transition-colors">Privacy Policy</a>
+          <a href="#" class="text-gray-400 hover:text-white transition-colors">Terms of Service</a>
+          <a href="#" class="text-gray-400 hover:text-white transition-colors">Cookie Policy</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      // Mobile menu functionality would go here
+      // New thread modal toggle
+      const newThreadBtn = document.querySelector('button:contains("New Thread")');
+      const threadModal = document.querySelector('.fixed.hidden');
+      
+      if (newThreadBtn && threadModal) {
+        newThreadBtn.addEventListener('click', () => {
+          threadModal.classList.remove('hidden');
+        });
+        
+        document.querySelector('.fixed.hidden button').addEventListener('click', () => {
+          threadModal.classList.add('hidden');
+        });
+      }
+    });
+  </script>
+</body>
+</html>

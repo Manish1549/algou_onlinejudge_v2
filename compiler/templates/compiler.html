@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Online Judge platform for coding challenges">
+    <title>{{problem.title}} | Code Challenge Platform</title>
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="https://cdn.tailwindcss.com/3.4.16" as="script">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" as="style">
+    
+    <!-- Load CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet" />
+    
+    <!-- Load scripts asynchronously -->
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.51.0/min/vs/loader.min.js" async></script>
+     <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: { primary: "#3b82f6", secondary: "#8dd3c7" },
+            borderRadius: {
+              none: "0px",
+              sm: "4px",
+              DEFAULT: "8px",
+              md: "12px",
+              lg: "16px",
+              xl: "20px",
+              "2xl": "24px",
+              "3xl": "32px",
+              full: "9999px",
+              button: "8px",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      /* Custom scrollbar for problem statement */
+      .custom-scroll {
+        scrollbar-width: thin;
+        scrollbar-color: #d1d5db #f3f4f6;
+      }
+      .custom-scroll::-webkit-scrollbar {
+        width: 6px;
+      }
+      .custom-scroll::-webkit-scrollbar-track {
+        background: #f3f4f6;
+      }
+      .custom-scroll::-webkit-scrollbar-thumb {
+        background-color: #d1d5db;
+        border-radius: 3px;
+      }
+      
+      /* Smooth transitions */
+      .transition-slow {
+        transition: all 0.3s ease;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50 font-sans antialiased">
+    <!-- Navbar -->
+    <!-- Navbar -->
+    <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
+      <nav class="w-full px-6 py-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-8">
+            <a href="/home/" class="font-['Pacifico'] text-2xl text-primary hover:text-primary/90 transition-colors">codeStellar</a>
+            <div class="hidden md:flex items-center space-x-6">
+              <a href="{% url 'problems' %}" class="text-gray-700 hover:text-primary transition-colors">Problems</a>
+              <a href="#" class="text-gray-700 hover:text-primary transition-colors">Contests</a>
+              <a href="#" class="text-gray-700 hover:text-primary transition-colors">Rankings</a>
+              <a href="#" class="text-gray-700 hover:text-primary transition-colors">Discussions</a>
+            </div>
+          </div>
+          <div class="flex items-center space-x-4">
+            {% if user.is_authenticated %}
+              <a href="{% url 'logout-user' %}" class="px-6 py-2 bg-red-500 text-white hover:bg-opacity-90 transition-colors whitespace-nowrap rounded-button flex items-center">
+                <i class="ri-logout-box-r-line mr-2"></i> Logout
+              </a>
+            {% else %}
+              <a href="{% url 'login-user' %}" class="px-4 py-2 text-gray-700 hover:text-primary transition-colors whitespace-nowrap rounded-button">Sign In</a>
+              <a href="{% url 'registration-user' %}" class="px-6 py-2 bg-primary text-white hover:bg-opacity-90 transition-colors whitespace-nowrap rounded-button">Get Started</a>
+            {% endif %}
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <div class="min-h-[calc(100vh-4rem)] flex flex-col lg:flex-row">
+      <!-- Left Column - Problem Statement -->
+      <div class="w-full lg:w-2/5 p-4 lg:p-6">
+        <div class="bg-white rounded-lg shadow border h-full flex flex-col overflow-hidden">
+          <div class="p-6 border-b">
+            <div class="flex items-center justify-between">
+              <h1 class="text-2xl font-bold text-gray-900">{{problem.title}}</h1>
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                {{problem.difficulty|default:"Medium"}}
+              </span>
+            </div>
+          </div>
+          <div class="p-6 overflow-y-auto custom-scroll flex-1">
+            <div class="prose prose-sm max-w-none">
+              <div class="text-gray-700 whitespace-pre-wrap mb-6">{{ problem.description }}</div>
+              
+              <h3 class="text-lg font-semibold mt-4 mb-2">Example :</h3>
+              <div class="bg-gray-100 p-4 rounded mb-6">
+                <strong class="block mb-1">Input:</strong>
+                <pre class="whitespace-pre-wrap bg-gray-200 p-2 rounded font-mono text-sm">{{problem.example_input}}</pre>
+                <strong class="block mt-3 mb-1">Output:</strong>
+                <pre class="whitespace-pre-wrap bg-gray-200 p-2 rounded font-mono text-sm">{{problem.example_output}}</pre>
+              </div>
+              
+              <h3 class="text-lg font-semibold mt-4 mb-2">Constraints:</h3>
+              <ul class="list-disc list-inside text-gray-700 space-y-1 mb-6">{{problem.constraints|safe}}</ul>
+              
+              <h3 class="text-lg font-semibold mt-4 mb-2">Follow-up:</h3>
+              <p class="text-gray-700">Can you come up with an algorithm that is less than O(n²) time complexity?</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column - Code Editor + Output -->
+      <div class="w-full lg:w-3/5 p-4 lg:p-6 flex flex-col">
+        <form method="post" action="{% url 'submit' problem.id %}" class="flex flex-col flex-1 gap-4">
+          {% csrf_token %}
+          <div class="bg-white rounded-lg shadow border flex-1 flex flex-col">
+            <div class="p-4 border-b flex justify-between items-center">
+              <h2 class="text-lg font-semibold">Code Editor</h2>
+              <select id="languageSelect" name="language" class="border rounded px-3 py-1 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-slow">
+                <option value="python">Python</option>
+                <option value="cpp">C++</option>
+              </select>
+            </div>
+            <div class="p-4 flex-1 flex flex-col">
+             <div id="monacoEditor" class="w-full flex-1 rounded-lg border shadow overflow-hidden"></div>
+             <input type="hidden" name="code" id="codeInput" />
+          <div class="mt-4 flex justify-end gap-2">
+             <button id="runBtn" type="button" class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-6 rounded-md transition-slow flex items-center justify-center">
+             <span id="runText">Run Code</span>
+              <i id="runLoadingIcon" class="ri-loader-4-line animate-spin ml-2 hidden"></i>
+          </button>
+          <button id="submitBtn" type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-md transition-slow flex items-center justify-center">
+            <span id="submitText">Submit Solution</span>
+         <i id="loadingIcon" class="ri-loader-4-line animate-spin ml-2 hidden"></i>
+         </button>
+         </div>
+         </div>
+          </div>
+        </form>
+
+        {% if submission %}
+        <div class="bg-white rounded-lg shadow border">
+          <div class="p-3 border-b flex items-center">
+            <i class="ri-play-circle-line mr-2 text-blue-500"></i>
+            <h3 class="text-sm font-semibold">Execution Results</h3>
+          </div>
+          <div class="p-3">
+            <div class="grid grid-cols-3 gap-2 mb-2 text-xs font-medium">
+              <div class="bg-gray-100 p-2 rounded">
+                <div class="text-gray-500">Status</div>
+                <div class="{{ submission.Verdict|lower }} font-mono">{{ submission.Verdict }}</div>
+              </div>
+              <div class="bg-gray-100 p-2 rounded">
+                <div class="text-gray-500">Runtime</div>
+                <div class="font-mono">{{ submission.runtime|default:"N/A" }} ms</div>
+              </div>
+              <div class="bg-gray-100 p-2 rounded">
+                <div class="text-gray-500">Memory</div>
+                <div class="font-mono">{{ submission.memory|default:"N/A" }} MB</div>
+              </div>
+            </div>
+            <textarea class="w-full h-24 bg-gray-100 font-mono text-sm p-3 rounded border resize-none" readonly>
+{% if submission.output_data %}{{ submission.output_data }}{% endif %}
+{% if submission.error %}Error: {{ submission.error }}{% endif %}
+            </textarea>
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- AI Review Link Button -->
+        <div class="mt-4">
+          <a href="{% url 'ai_review' problem.id %}" 
+             class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded transition-slow flex items-center justify-center">
+            <i class="ri-robot-2-line mr-2"></i>
+            <span>Get AI Code Review</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hidden Fields -->
+    <textarea id="lastCode" hidden>{% if last_submission %}{{ last_submission.code }}{% endif %}</textarea>
+    <input type="hidden" id="lastLang" value="{% if last_submission %}{{ last_submission.langauge|default:'cpp' }}{% else %}cpp{% endif %}">
+   
+        <!-- Custom Input Modal -->
+<div id="customInputModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+  <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl">
+    <div class="p-4 border-b flex justify-between items-center">
+      <h3 class="text-lg font-semibold">Custom Test Case</h3>
+      <button id="closeModalBtn" class="text-gray-500 hover:text-gray-700">
+        <i class="ri-close-line text-xl"></i>
+      </button>
+    </div>
+    <div class="p-4">
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Input</label>
+        <textarea id="customInput" class="w-full h-32 bg-gray-100 font-mono text-sm p-3 rounded border resize-none"></textarea>
+      </div>
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Output</label>
+        <textarea id="customOutput" class="w-full h-32 bg-gray-100 font-mono text-sm p-3 rounded border resize-none" readonly></textarea>
+      </div>
+      <div class="flex justify-end gap-2">
+        <button id="cancelRunBtn" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium py-2 px-4 rounded-md transition-slow">
+          Cancel
+        </button>
+        <button id="executeBtn" class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md transition-slow flex items-center">
+          <span>Execute</span>
+          <i id="executeLoadingIcon" class="ri-loader-4-line animate-spin ml-2 hidden"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+    <script>
+      // Configuration and templates
+      const templates = {
+        python: `# Write your solution here\n# Time: O(n), Space: O(n)\n\ndef solution():\n    pass`,
+        cpp: `// Write your C++ solution here\n#include <iostream>\n#include <vector>\nusing namespace std;\n\nint main() {\n    \n    return 0;\n}`,
+      };
+
+      function initializeEditor() {
+        const lastCodeElement = document.getElementById("lastCode");
+        let lastCode = lastCodeElement.textContent.trim();
+        const lastLang = document.getElementById("lastLang").value || "cpp";
+        
+        // If lastCode contains escaped characters, unescape them
+        if (lastCode.includes('\\u')) {
+          try {
+            lastCode = JSON.parse(`"${lastCode}"`);
+          } catch (e) {
+            console.error("Error unescaping code:", e);
+          }
+        }
+
+        require.config({ 
+          paths: { vs: "https://cdn.jsdelivr.net/npm/monaco-editor@0.51.0/min/vs" },
+          'vs/nls': { availableLanguages: { '*': 'en' } }
+        });
+        
+        require(["vs/editor/editor.main"], function() {
+          const editor = monaco.editor.create(document.getElementById("monacoEditor"), {
+            value: lastCode || templates[lastLang],
+            language: lastLang,
+            theme: "vs-dark",
+            automaticLayout: true,
+            minimap: { enabled: false },
+            fontSize: 14,
+            scrollBeyondLastLine: false,
+            renderWhitespace: "selection",
+            roundedSelection: true
+          });
+
+          document.getElementById("languageSelect").value = lastLang;
+          
+          // Language change handler
+          document.getElementById("languageSelect").addEventListener("change", function() {
+            const lang = this.value;
+            monaco.editor.setModelLanguage(editor.getModel(), lang);
+            if (!lastCode) {
+              editor.setValue(templates[lang] || "");
+            }
+          });
+
+          // Form submission handler
+          document.querySelector("form").addEventListener("submit", function(e) {
+            const submitBtn = document.getElementById("submitBtn");
+            const loadingIcon = document.getElementById("loadingIcon");
+            const submitText = document.getElementById("submitText");
+            
+            submitBtn.disabled = true;
+            submitText.textContent = "Submitting...";
+            loadingIcon.classList.remove("hidden");
+            
+            document.getElementById("codeInput").value = editor.getValue();
+          });
+        });
+      }
+
+      // Load editor when resources are ready
+      if (typeof require !== 'undefined') {
+        initializeEditor();
+      } else {
+        window.addEventListener('load', initializeEditor);
+      }
+      // Run button functionality
+document.getElementById("runBtn").addEventListener("click", function() {
+  document.getElementById("customInputModal").classList.remove("hidden");
+});
+
+// Close modal buttons
+document.getElementById("closeModalBtn").addEventListener("click", function() {
+  document.getElementById("customInputModal").classList.add("hidden");
+});
+
+document.getElementById("cancelRunBtn").addEventListener("click", function() {
+  document.getElementById("customInputModal").classList.add("hidden");
+});
+
+// Execute button handler
+document.getElementById("executeBtn").addEventListener("click", async function() {
+  const executeBtn = document.getElementById("executeBtn");
+  const executeLoadingIcon = document.getElementById("executeLoadingIcon");
+  const runText = document.getElementById("runText");
+  const runLoadingIcon = document.getElementById("runLoadingIcon");
+  
+  executeBtn.disabled = true;
+  executeLoadingIcon.classList.remove("hidden");
+  
+  const customInput = document.getElementById("customInput").value;
+  const language = document.getElementById("languageSelect").value;
+  const code = monaco.editor.getModels()[0].getValue();
+  
+  try {
+    const response = await fetch('/compiler/run_custom/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        language: language,
+        code: code,
+        input_data: customInput
+      })
+    });
+    
+    const data = await response.json();
+    
+    if (data.error) {
+      document.getElementById("customOutput").value = `Error:\n${data.error}`;
+    } else {
+      document.getElementById("customOutput").value = data.output;
+    }
+  } catch (error) {
+    document.getElementById("customOutput").value = `Error: ${error.message}`;
+  } finally {
+    executeBtn.disabled = false;
+    executeLoadingIcon.classList.add("hidden");
+  }
+});
+    </script>
+
+  </body>
+</html>

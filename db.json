@@ -1,0 +1,95 @@
+[
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "admin",
+    "model": "logentry"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "auth",
+    "model": "permission"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "auth",
+    "model": "group"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "auth",
+    "model": "user"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "contenttypes",
+    "model": "contenttype"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "sessions",
+    "model": "session"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "compiler",
+    "model": "codesubmission"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "compiler",
+    "model": "problem"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "compiler",
+    "model": "testcases"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "1ofi90ai00091whe6y3ccwieoyds743e",
+  "fields": {
+    "session_data": ".eJxVjDsOwjAQBe_iGll24t9S0nMGa9fr4ACypTipEHeHSCmgfTPzXiLitpa49bzEmcVZGHH63QjTI9cd8B3rrcnU6rrMJHdFHrTLa-P8vBzu30HBXr71yIkY0YJlxgBgcfRaOZ28M84HQELjHMGkUgYImacwaI2sRqWJzSDeH_Y-OAk:1ulCGS:iotOEsfLlWjmKAPfMpizMZ9_9o86XZHmg5hAtk0Korw",
+    "expire_date": "2025-08-24T20:03:32.909Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "3m6xjony6cam64kl99a1pv6hvnlzs43u",
+  "fields": {
+    "session_data": ".eJxVjEEOgjAURO_StWmobafFpXvOQP7_bQU1kFBYGe-uJCx0O--9eametnXot5qXfkzqoqw6_W5M8sjTDtKdptusZZ7WZWS9K_qgVXdzys_r4f4dDFSHb-08LDGjQRSH2BSDwI4zEIJ4EvKp9TkbGLjW4lxsKA2KFLDYiKLeH9NIN7s:1ukqF2:TNm74y6G91OB3_7TUETtF8Miuk7K1C1PuTJCKvCuWjs",
+    "expire_date": "2025-08-23T20:32:36.183Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "v0g2fdn9o3kvk4fkkr0xt78v200hpurs",
+  "fields": {
+    "session_data": ".eJxVjDsOwyAQBe9CHaFFmI9Tps8ZELsswUkEkrErK3ePkFwk7ZuZd4gQ962EvfMaliSuQonL74aRXlwHSM9YH01Sq9u6oByKPGmX95b4fTvdv4MSexn15LVCNMpOLuU5RWRr0GlvAdiDjpkQJtKZeTaQtVdAJhvlfCZyNonPF-rYODY:1ulP3Y:qj51GcbMfqkBwO9JjZHG7jcA64ZPvsBSANlySK7GQg8",
+    "expire_date": "2025-08-25T09:43:04.210Z"
+  }
+},
+{
+  "model": "compiler.problem",
+  "pk": 1,
+  "fields": {
+    "title": "Two Sum",
+    "description": "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to the target.\r\nYou may assume that each input would have exactly one solution, and you may not use the same element twice.\r\nYou can return the answer in any order.",
+    "constraints": 

@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Code Review - Online Judge</title>
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: "#3b82f6",
+              secondary: "#8b5cf6",
+            },
+            borderRadius: {
+              none: "0px",
+              sm: "4px",
+              DEFAULT: "8px",
+              md: "12px",
+              lg: "16px",
+              xl: "20px",
+              "2xl": "24px",
+              "3xl": "32px",
+              full: "9999px",
+              button: "8px",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      :where([class^="ri-"])::before {
+          content: "\f3c2";
+      }
+      .code-line {
+          counter-increment: line-counter;
+      }
+      .code-line::before {
+          content: counter(line-counter);
+          display: inline-block;
+          width: 3rem;
+          text-align: right;
+          margin-right: 1rem;
+          color: #6b7280;
+          font-size: 0.875rem;
+          user-select: none;
+      }
+      .code-container {
+          counter-reset: line-counter;
+      }
+      .split-view {
+          resize: horizontal;
+          overflow: auto;
+      }
+      
+      /* Custom styles for AI feedback */
+      .feedback-item {
+          padding: 12px 16px;
+          margin-bottom: 12px;
+          background-color: #f8fafc;
+          border-radius: 8px;
+          border-left: 4px solid #3b82f6;
+      }
+      
+      .feedback-item h5 {
+          font-weight: 600;
+          margin-bottom: 6px;
+          color: #1e293b;
+      }
+      
+      .feedback-item p {
+          margin: 0;
+          color: #475569;
+      }
+      
+      .feedback-tag {
+          display: inline-block;
+          padding: 2px 8px;
+          border-radius: 4px;
+          font-size: 0.75rem;
+          font-weight: 500;
+          margin-right: 8px;
+      }
+      
+      .tag-quality { background-color: #dbeafe; color: #1e40af; }
+      .tag-improvement { background-color: #fef3c7; color: #92400e; }
+      .tag-alternative { background-color: #ede9fe; color: #5b21b6; }
+      .tag-performance { background-color: #dcfce7; color: #166534; }
+      
+      /* Complexity chart styles */
+      .complexity-bar {
+          height: 8px;
+          border-radius: 4px;
+          background-color: #e5e7eb;
+          overflow: hidden;
+          margin-top: 4px;
+      }
+      
+      .complexity-fill {
+          height: 100%;
+          border-radius: 4px;
+          transition: width 1s ease-in-out;
+      }
+      
+      .complexity-label {
+          font-size: 0.875rem;
+          font-weight: 500;
+          margin-top: 4px;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50 min-h-screen">
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
+      <div class="px-6 py-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-4">
+            <h1 class="text-2xl font-bold text-gray-900">AI Code Review</h1>
+            <nav class="flex items-center text-sm text-gray-500">
+              <span>Problems</span>
+              <div class="w-4 h-4 flex items-center justify-center mx-2">
+                <i class="ri-arrow-right-s-line"></i>
+              </div>
+              <span>{{ problem.title }}</span>
+              <div class="w-4 h-4 flex items-center justify-center mx-2">
+                <i class="ri-arrow-right-s-line"></i>
+              </div>
+              <span>Submission #{{ last_submission.id }}</span>
+              <div class="w-4 h-4 flex items-center justify-center mx-2">
+                <i class="ri-arrow-right-s-line"></i>
+              </div>
+              <span class="text-primary">AI Review</span>
+            </nav>
+          </div>
+          <button
+            onclick="window.history.back()"
+            class="px-4 py-2 bg-gray-100 text-gray-700 rounded-button hover:bg-gray-200 transition-colors whitespace-nowrap"
+          >
+            <div
+              class="w-4 h-4 flex items-center justify-center mr-2 inline-flex"
+            >
+              <i class="ri-arrow-left-line"></i>
+            </div>
+            Back to Submission
+          </button>
+        </div>
+      </div>
+    </header>
+    <main class="max-w-7xl mx-auto px-6 py-8">
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
+        <div class="px-6 py-4 border-b border-gray-200">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-6">
+              <div>
+                <h2 class="text-lg font-semibold text-gray-900">
+                  Submission for {{ problem.title }}
+                </h2>
+                
+              </div>
+              <div class="text-sm text-gray-600">
+                <p>Language: <span class="font-medium">{{ last_submission.language }}</span></p>
+                <p>Submitted On: <span class="font-medium">{{ last_submission.timestamp }}</span></p>
+              </div>
+              <div class="flex items-center space-x-2">
+                {% with verdict=last_submission.verdict %}
+                <div class="w-3 h-3 
+                  {% if verdict == 'Accepted' %}bg-green-500
+                  {% elif verdict == 'Error' %}bg-red-500
+                  {% else %}bg-yellow-500{% endif %} 
+                  rounded-full"></div>
+                <span class="text-sm font-medium 
+                  {% if verdict == 'Accepted' %}text-green-600
+                  {% elif verdict == 'Error' %}text-red-600
+                  {% else %}text-yellow-600{% endif %}">
+                  Verdict: {{ verdict }}
+                </span>
+                {% endwith %}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="px-6 py-4">
+          <div class="grid grid-cols-4 gap-6">
+            <div class="text-center">
+              <div class="text-2xl font-bold text-primary">{{ quality_score }}</div>
+              <div class="text-sm text-gray-600">Code Quality Score</div>
+            </div>
+            <div class="text-center">
+              <div class="text-2xl font-bold text-yellow-600">{{ issues_found }}</div>
+              <div class="text-sm text-gray-600">Issues Found</div>
+            </div>
+            <div class="text-center">
+              <div class="text-2xl font-bold text-green-600">{{ performance_grade }}</div>
+              <div class="text-sm text-gray-600">Performance Grade</div>
+            </div>
+            <div class="text-center">
+              <div class="text-2xl font-bold text-purple-600">{{ best_practices_score }}</div>
+              <div class="text-sm text-gray-600">Best Practices</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
+        <div class="px-6 py-4 border-b border-gray-200">
+          <div class="flex items-center justify-between">
+            <h3 class="text-lg font-semibold text-gray-900">Code Review</h3>
+            <div class="flex items-center space-x-3">
+              <button
+                id="toggleViewButton"
+                class="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-button hover:bg-gray-200 transition-colors whitespace-nowrap"
+              >
+                <div
+                  class="w-4 h-4 flex items-center justify-center mr-1 inline-flex"
+                >
+                  <i class="ri-eye-line"></i>
+                </div>
+                Show Issues Only
+              </button>
+              <button
+                id="copyCodeButton"
+                class="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-button hover:bg-gray-200 transition-colors whitespace-nowrap"
+              >
+                <div
+                  class="w-4 h-4 flex items-center justify-center mr-1 inline-flex"
+                >
+                  <i class="ri-file-copy-line"></i>
+                </div>
+                Copy Code
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex h-96">
+          <div class="w-1/2 border-r border-gray-200">
+            <div class="px-4 py-3 bg-gray-50 border-b border-gray-200">
+              <h4 class="text-sm font-medium text-gray-700">Submitted Code ({{ last_submission.language|default:"Unknown" }})</h4>
+            </div>
+            <div class="p-4 overflow-auto h-full">
+              {% if last_submission %}
+                <div class="code-container font-mono text-sm">
+                  {% for line in last_submission.code.splitlines %}
+                    <div class="code-line text-gray-800 {% cycle 'bg-white' 'bg-gray-50' %}">
+                      {{ line }}
+                    </div>
+                  {% endfor %}
+                </div>
+              {% else %}
+                <div class="text-gray-500 italic">No submission found</div>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="w-1/2">
+            <div class="px-4 py-3 bg-gray-50 border-b border-gray-200">
+              <h4 class="text-sm font-medium text-gray-700">
+                AI Review Comments
+              </h4>
+            </div>
+            <div class="p-4 overflow-auto h-full">
+              {% if bullet_points %}
+                <div class="space-y-3">
+                  {% for point in bullet_points %}
+                    <div class="feedback-item">
+                      {% if "Code Quality:" in point %}
+                        <span class="feedback-tag tag-quality">Code Quality</span>
+                        <h5>Code Quality:</h5>
+                        <p>{{ point|slice:"13:" }}</p>
+                      {% elif "Potential Improvement:" in point %}
+                        <span class="feedback-tag tag-improvement">Improvement</span>
+                        <h5>Potential Improvement:</h5>
+                        <p>{{ point|slice:"23:" }}</p>
+                      {% elif "Potential Improvements:" in point %}
+                        <span class="feedback-tag tag-improvement">Improvement</span>
+                        <h5>Potential Improvements:</h5>
+                        <p>{{ point|slice:"24:" }}</p>
+                      {% elif "Alternative Approaches:" in point %}
+                        <span class="feedback-tag tag-alternative">Alternative</span>
+                        <h5>Alternative Approaches:</h5>
+                        <p>{{ point|slice:"23:" }}</p>
+                      {% elif "Alternative Approach:" in point %}
+                        <span class="feedback-tag tag-alternative">Alternative</span>
+                        <h5>Alternative Approach:</h5>
+                        <p>{{ point|slice:"21:" }}</p>
+                      {% elif "Performance Considerations:" in point %}
+                        <span class="feedback-tag tag-performance">Performance</span>
+                        <h5>Performance Considerations:</h5>
+                        <p>{{ point|slice:"28:" }}</p>
+                      {% elif "Performance:" in point %}
+                        <span class="feedback-tag tag-performance">Performance</span>
+                        <h5>Performance:</h5>
+                        <p>{{ point|slice:"12:" }}</p>
+                      {% else %}
+                        <p>{{ point }}</p>
+                      {% endif %}
+                    </div>
+                  {% endfor %}
+                </div>
+              {% elif response_text %}
+                <div class="bg-gray-50 p-4 rounded-lg whitespace-pre-wrap text-sm">
+                  {{ response_text }}
+                </div>
+              {% else %}
+                <div class="text-gray-500 italic">No feedback available</div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+          <div class="px-4 py-3 border-b border-gray-200">
+            <h4 class="text-sm font-semibold text-gray-900 flex items-center">
+              <div class="w-4 h-4 flex items-center justify-center mr-2">
+                <i class="ri-code-s-slash-line text-primary"></i>
+              </div>
+              Code Style
+            </h4>
+          </div>
+          <div class="p-4">
+            <div class="space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-sm text-gray-600">Naming Conventions</span>
+                <span class="text-sm font-medium text-yellow-600">Good</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-sm text-gray-600">Code Formatting</span>
+                <span class="text-sm font-medium text-green-600"
+                  >Excellent</span
+                >
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-sm text-gray-600">Comments</span>
+                <span class="text-sm font-medium text-red-600">Needs Work</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+          <div class="px-4 py-3 border-b border-gray-200">
+            <h4 class="text-sm font-semibold text-gray-900 flex items-center">
+              <div class="w-4 h-4 flex items-center justify-center mr-2">
+                <i class="ri-speed-line text-green-600"></i>
+              </div>
+              Performance
+            </h4>
+          </div>
+          <div class="p-4">
+            <div class="space-y-4">
+              <div>
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-sm text-gray-600">Time Complexity</span>
+                  <span class="text-sm font-medium text-green-600" id="time-complexity-value">{{ time_complexity }}</span>
+                </div>
+                <div class="complexity-bar">
+                  <div class="complexity-fill bg-green-500" id="time-complexity-bar" style="width: 70%"></div>
+                </div>
+                <div class="complexity-label text-green-600" id="time-complexity-label">Efficient</div>
+              </div>
+              
+              <div>
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-sm text-gray-600">Space Complexity</span>
+                  <span class="text-sm font-medium text-green-600" id="space-complexity-value">{{ space_complexity }}</span>
+                </div>
+                <div class="complexity-bar">
+                  <div class="complexity-fill bg-green-500" id="space-complexity-bar" style="width: 90%"></div>
+                </div>
+                <div class="complexity-label text-green-600" id="space-complexity-label">Optimal</div>
+              </div>
+              
+              <div>
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-sm text-gray-600">Memory Usage</span>
+                  <span class="text-sm font-medium text-green-600">Optimal</span>
+                </div>
+                <div class="complexity-bar">
+                  <div class="complexity-fill bg-green-500" style="width: 85%"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+          <div class="px-4 py-3 border-b border-gray-200">
+            <h4 class="text-sm font-semibold text-gray-900 flex items-center">
+              <div class="w-4 h-4 flex items-center justify-center mr-2">
+                <i class="ri-shield-check-line text-purple-600"></i>
+              </div>
+              Best Practices
+            </h4>
+          </div>
+          <div class="p-4">
+            <div class="space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-sm text-gray-600">Error Handling</span>
+                <span class="text-sm font-medium text-yellow-600">Partial</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-sm text-gray-600">Edge Cases</span>
+                <span class="text-sm font-medium text-green-600">Covered</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-sm text-gray-600">Code Reusability</span>
+                <span class="text-sm font-medium text-green-600">Good</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <div
+      class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-6 py-4"
+    >
+      <div class="max-w-7xl mx-auto flex items-center justify-between">
+        <div class="flex items-center space-x-4">
+          <button
+            onclick="window.history.back()"
+            class="px-4 py-2 bg-gray-100 text-gray-700 rounded-button hover:bg-gray-200 transition-colors whitespace-nowrap"
+          >
+            <div
+              class="w-4 h-4 flex items-center justify-center mr-2 inline-flex"
+            >
+              <i class="ri-arrow-left-line"></i>
+            </div>
+            Back to Submission
+          </button>
+          
+        </div>
+        <div class="flex items-center space-x-3">
+          <button
+            class="px-4 py-2 bg-primary text-white rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap"
+          >
+            <div
+              class="w-4 h-4 flex items-center justify-center mr-2 inline-flex"
+            >
+              <i class="ri-download-line"></i>
+            </div>
+            Download Review
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Toggle functionality for showing issues only
+        const toggleViewButton = document.getElementById("toggleViewButton");
+        const codeLines = document.querySelectorAll(".code-line");
+        let showingAll = true;
+
+        toggleViewButton.addEventListener("click", function () {
+          showingAll = !showingAll;
+
+          if (showingAll) {
+            codeLines.forEach((line) => {
+              line.style.display = "block";
+            });
+            toggleViewButton.innerHTML = `
+              <div class="w-4 h-4 flex items-center justify-center mr-1 inline-flex">
+                <i class="ri-eye-line"></i>
+              </div>
+              Show Issues Only
+            `;
+          } else {
+            // In a real implementation, you would have specific logic to identify issues
+            // For now, we'll just show a subset for demonstration
+            codeLines.forEach((line, index) => {
+              if (index % 5 === 0) { // Example condition
+                line.style.display = "block";
+                line.classList.add("bg-yellow-50");
+              } else {
+                line.style.display = "none";
+                line.classList.remove("bg-yellow-50");
+              }
+            });
+            toggleViewButton.innerHTML = `
+              <div class="w-4 h-4 flex items-center justify-center mr-1 inline-flex">
+                <i class="ri-eye-off-line"></i>
+              </div>
+              Show All
+            `;
+          }
+        });
+
+        // Copy code functionality
+        const copyCodeButton = document.getElementById("copyCodeButton");
+        
+        copyCodeButton.addEventListener("click", function () {
+          const codeLines = document.querySelectorAll(".code-line");
+          let codeText = "";
+
+          codeLines.forEach((line) => {
+            codeText += line.textContent.trim() + "\n";
+          });
+
+          navigator.clipboard.writeText(codeText).then(function () {
+            const originalContent = copyCodeButton.innerHTML;
+            copyCodeButton.innerHTML = `
+              <div class="w-4 h-4 flex items-center justify-center mr-1 inline-flex">
+                <i class="ri-check-line"></i>
+              </div>
+              Copied!
+            `;
+
+            setTimeout(() => {
+              copyCodeButton.innerHTML = originalContent;
+            }, 2000);
+          });
+        });
+        
+        // Extract time complexity from AI feedback
+        function extractComplexityFromFeedback() {
+          const timeComplexity = "{{ time_complexity }}";
+          const spaceComplexity = "{{ space_complexity }}";
+          
+          let timeEfficiency = 70;
+          let spaceEfficiency = 90;
+          
+          // Calculate efficiency based on complexity
+          if (timeComplexity.includes('O(1)')) {
+              timeEfficiency = 95;
+          } else if (timeComplexity.includes('O(log n)')) {
+              timeEfficiency = 85;
+          } else if (timeComplexity.includes('O(n)')) {
+              timeEfficiency = 70;
+          } else if (timeComplexity.includes('O(n log n)')) {
+              timeEfficiency = 60;
+          } else if (timeComplexity.includes('O(n²)') || timeComplexity.includes('O(n^2)')) {
+              timeEfficiency = 40;
+          } else if (timeComplexity.includes('O(n³)') || timeComplexity.includes('O(n^3)')) {
+              timeEfficiency = 25;
+          } else if (timeComplexity.includes('O(2^n)')) {
+              timeEfficiency = 10;
+          }
+          
+          if (spaceComplexity.includes('O(1)')) {
+              spaceEfficiency = 95;
+          } else if (spaceComplexity.includes('O(n)')) {
+              spaceEfficiency = 70;
+          } else if (spaceComplexity.includes('O(n²)') || spaceComplexity.includes('O(n^2)')) {
+              spaceEfficiency = 40;
+          }
+          
+          // Update the UI with extracted values
+          document.getElementById('time-complexity-value').textContent = timeComplexity;
+          document.getElementById('space-complexity-value').textContent = spaceComplexity;
+          document.getElementById('time-complexity-bar').style.width = timeEfficiency + '%';
+          document.getElementById('space-complexity-bar').style.width = spaceEfficiency + '%';
+          
+          // Update colors based on efficiency
+          const timeBar = document.getElementById('time-complexity-bar');
+          const spaceBar = document.getElementById('space-complexity-bar');
+          
+          timeBar.className = timeEfficiency >= 80 ? 'complexity-fill bg-green-500' :
+                             timeEfficiency >= 60 ? 'complexity-fill bg-yellow-500' :
+                             timeEfficiency >= 40 ? 'complexity-fill bg-orange-500' : 'complexity-fill bg-red-500';
+          
+          spaceBar.className = spaceEfficiency >= 80 ? 'complexity-fill bg-green-500' :
+                              spaceEfficiency >= 60 ? 'complexity-fill bg-yellow-500' :
+                              spaceEfficiency >= 40 ? 'complexity-fill bg-orange-500' : 'complexity-fill bg-red-500';
+          
+          // Update labels based on efficiency
+          document.getElementById('time-complexity-label').textContent = 
+              timeEfficiency >= 80 ? 'Highly Efficient' : 
+              timeEfficiency >= 60 ? 'Efficient' :
+              timeEfficiency >= 40 ? 'Moderate' : 'Inefficient';
+              
+          document.getElementById('space-complexity-label').textContent = 
+              spaceEfficiency >= 80 ? 'Highly Efficient' : 
+              spaceEfficiency >= 60 ? 'Efficient' :
+              spaceEfficiency >= 40 ? 'Moderate' : 'Inefficient';
+        }
+        
+        // Run complexity extraction after a short delay to allow DOM to fully render
+        setTimeout(extractComplexityFromFeedback, 300);
+      });
+    </script>
+  </body>
+</html>
