@@ -26,7 +26,7 @@ def call_external_service(language, code, input_data):
              'input_data': input_data
         }
         response = requests.post(
-            settings.RUN_CODE_SERVICE_URL,
+            "http://98.81.82.84:8000/run/",
             json=payload,
             timeout=10  # 10 second timeout
         )
